@@ -17,7 +17,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
 
 (function (o_o) {
   typeof define  === 'function' && define.amd ? define(['jquery'], o_o) :
-  typeof exports === 'object' ? o_o(require('jquery')) : o_o(this.jQuery)
+  typeof exports === 'object' ? o_o(require('jquery')) : o_o(jQuery)
 })(function ($) {
 
   'use strict';
@@ -48,7 +48,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
   $.fn.emulateTransitionEnd = function (duration) {
     var called = false
     var $el = this
-    $(this).one($.support.transition.end, function () { called = true })
+    $(this).one('bsTransitionEnd', function () { called = true })
     var callback = function () { if (!called) $($el).trigger($.support.transition.end) }
     setTimeout(callback, duration)
     return this
@@ -56,6 +56,16 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
 
   $(function () {
     $.support.transition = transitionEnd()
+
+    if (!$.support.transition) return
+
+    $.event.special.bsTransitionEnd = {
+      bindType: $.support.transition.end,
+      delegateType: $.support.transition.end,
+      handle: function (e) {
+        if ($(e.target).is(this)) return e.handleObj.handler.apply(this, arguments)
+      }
+    }
   })
 
 });
@@ -71,7 +81,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
 
 (function (o_o) {
   typeof define  === 'function' && define.amd ? define(['jquery'], o_o) :
-  typeof exports === 'object' ? o_o(require('jquery')) : o_o(this.jQuery)
+  typeof exports === 'object' ? o_o(require('jquery')) : o_o(jQuery)
 })(function ($) {
 
   'use strict';
@@ -116,7 +126,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
 
     $.support.transition && $parent.hasClass('fade') ?
       $parent
-        .one($.support.transition.end, removeElement)
+        .one('bsTransitionEnd', removeElement)
         .emulateTransitionEnd(150) :
       removeElement()
   }
@@ -168,7 +178,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
 
 (function (o_o) {
   typeof define  === 'function' && define.amd ? define(['jquery'], o_o) :
-  typeof exports === 'object' ? o_o(require('jquery')) : o_o(this.jQuery)
+  typeof exports === 'object' ? o_o(require('jquery')) : o_o(jQuery)
 })(function ($) {
 
   'use strict';
@@ -283,7 +293,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
 
 (function (o_o) {
   typeof define  === 'function' && define.amd ? define(['jquery'], o_o) :
-  typeof exports === 'object' ? o_o(require('jquery')) : o_o(this.jQuery)
+  typeof exports === 'object' ? o_o(require('jquery')) : o_o(jQuery)
 })(function ($) {
 
   'use strict';
@@ -416,7 +426,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
       $active.addClass(direction)
       $next.addClass(direction)
       $active
-        .one($.support.transition.end, function () {
+        .one('bsTransitionEnd', function () {
           $next.removeClass([type, direction].join(' ')).addClass('active')
           $active.removeClass(['active', direction].join(' '))
           that.sliding = false
@@ -510,7 +520,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
 
 (function (o_o) {
   typeof define  === 'function' && define.amd ? define(['jquery'], o_o) :
-  typeof exports === 'object' ? o_o(require('jquery')) : o_o(this.jQuery)
+  typeof exports === 'object' ? o_o(require('jquery')) : o_o(jQuery)
 })(function ($) {
 
   'use strict';
@@ -562,18 +572,12 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
 
     this.transitioning = 1
 
-    var complete = function (e) {
-      if (e && e.target != this.$element[0]) {
-        this.$element
-          .one($.support.transition.end, $.proxy(complete, this))
-        return
-      }
+    var complete = function () {
       this.$element
         .removeClass('collapsing')
         .addClass('collapse in')[dimension]('')
       this.transitioning = 0
       this.$element
-        .off($.support.transition.end + '.bs.collapse')
         .trigger('shown.bs.collapse')
     }
 
@@ -582,7 +586,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
     var scrollSize = $.camelCase(['scroll', dimension].join('-'))
 
     this.$element
-      .on($.support.transition.end + '.bs.collapse', $.proxy(complete, this))
+      .one('bsTransitionEnd', $.proxy(complete, this))
       .emulateTransitionEnd(350)[dimension](this.$element[0][scrollSize])
   }
 
@@ -604,12 +608,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
 
     this.transitioning = 1
 
-    var complete = function (e) {
-      if (e && e.target != this.$element[0]) {
-        this.$element
-          .one($.support.transition.end, $.proxy(complete, this))
-        return
-      }
+    var complete = function () {
       this.transitioning = 0
       this.$element
         .trigger('hidden.bs.collapse')
@@ -621,7 +620,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
 
     this.$element
       [dimension](0)
-      .one($.support.transition.end, $.proxy(complete, this))
+      .one('bsTransitionEnd', $.proxy(complete, this))
       .emulateTransitionEnd(350)
   }
 
@@ -696,7 +695,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
 
 (function (o_o) {
   typeof define  === 'function' && define.amd ? define(['jquery'], o_o) :
-  typeof exports === 'object' ? o_o(require('jquery')) : o_o(this.jQuery)
+  typeof exports === 'object' ? o_o(require('jquery')) : o_o(jQuery)
 })(function ($) {
 
   'use strict';
@@ -852,7 +851,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
 
 (function (o_o) {
   typeof define  === 'function' && define.amd ? define(['jquery'], o_o) :
-  typeof exports === 'object' ? o_o(require('jquery')) : o_o(this.jQuery)
+  typeof exports === 'object' ? o_o(require('jquery')) : o_o(jQuery)
 })(function ($) {
 
   'use strict';
@@ -932,7 +931,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
 
       transition ?
         that.$element.find('.modal-dialog') // wait for modal to slide in
-          .one($.support.transition.end, function () {
+          .one('bsTransitionEnd', function () {
             that.$element.trigger('focus').trigger(e)
           })
           .emulateTransitionEnd(300) :
@@ -965,7 +964,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
 
     $.support.transition && this.$element.hasClass('fade') ?
       this.$element
-        .one($.support.transition.end, $.proxy(this.hideModal, this))
+        .one('bsTransitionEnd', $.proxy(this.hideModal, this))
         .emulateTransitionEnd(300) :
       this.hideModal()
   }
@@ -1028,7 +1027,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
 
       doAnimate ?
         this.$backdrop
-          .one($.support.transition.end, callback)
+          .one('bsTransitionEnd', callback)
           .emulateTransitionEnd(150) :
         callback()
 
@@ -1041,7 +1040,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
       }
       $.support.transition && this.$element.hasClass('fade') ?
         this.$backdrop
-          .one($.support.transition.end, callbackRemove)
+          .one('bsTransitionEnd', callbackRemove)
           .emulateTransitionEnd(150) :
         callbackRemove()
 
@@ -1138,7 +1137,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
 
 (function (o_o) {
   typeof define  === 'function' && define.amd ? define(['jquery'], o_o) :
-  typeof exports === 'object' ? o_o(require('jquery')) : o_o(this.jQuery)
+  typeof exports === 'object' ? o_o(require('jquery')) : o_o(jQuery)
 })(function ($) {
 
   'use strict';
@@ -1338,7 +1337,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
 
       $.support.transition && this.$tip.hasClass('fade') ?
         $tip
-          .one($.support.transition.end, complete)
+          .one('bsTransitionEnd', complete)
           .emulateTransitionEnd(150) :
         complete()
     }
@@ -1426,7 +1425,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
 
     $.support.transition && this.$tip.hasClass('fade') ?
       $tip
-        .one($.support.transition.end, complete)
+        .one('bsTransitionEnd', complete)
         .emulateTransitionEnd(150) :
       complete()
 
@@ -1599,7 +1598,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
 
 (function (o_o) {
   typeof define  === 'function' && define.amd ? define(['jquery'], o_o) :
-  typeof exports === 'object' ? o_o(require('jquery')) : o_o(this.jQuery)
+  typeof exports === 'object' ? o_o(require('jquery')) : o_o(jQuery)
 })(function ($) {
 
   'use strict';
@@ -1717,7 +1716,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
 
 (function (o_o) {
   typeof define  === 'function' && define.amd ? define(['jquery'], o_o) :
-  typeof exports === 'object' ? o_o(require('jquery')) : o_o(this.jQuery)
+  typeof exports === 'object' ? o_o(require('jquery')) : o_o(jQuery)
 })(function ($) {
 
   'use strict';
@@ -1892,7 +1891,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
 
 (function (o_o) {
   typeof define  === 'function' && define.amd ? define(['jquery'], o_o) :
-  typeof exports === 'object' ? o_o(require('jquery')) : o_o(this.jQuery)
+  typeof exports === 'object' ? o_o(require('jquery')) : o_o(jQuery)
 })(function ($) {
 
   'use strict';
@@ -1968,7 +1967,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
 
     transition ?
       $active
-        .one($.support.transition.end, next)
+        .one('bsTransitionEnd', next)
         .emulateTransitionEnd(150) :
       next()
 
@@ -2025,7 +2024,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
 
 (function (o_o) {
   typeof define  === 'function' && define.amd ? define(['jquery'], o_o) :
-  typeof exports === 'object' ? o_o(require('jquery')) : o_o(this.jQuery)
+  typeof exports === 'object' ? o_o(require('jquery')) : o_o(jQuery)
 })(function ($) {
 
   'use strict';
